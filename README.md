@@ -2,6 +2,8 @@
 
 A free orbiting camera for [Parkitect](https://www.themeparkitect.com/): tilt it down to the ground or up to the sky, orbit around anything, and zoom from the treetops down to a guest's shoulder.
 
+[Steam Workshop page](https://steamcommunity.com/sharedfiles/filedetails/?id=3838167836)
+
 Orbit Cam continues [Perspective Camera](https://steamcommunity.com/sharedfiles/filedetails/?id=1291489658) by H-POPS ([source](https://github.com/H-POPS/Parkitect_PerspectiveCamera)), with fixes and new features on top. It uses its own identifier (`xupisco@OrbitCam`), so **disable Perspective Camera when using Orbit Cam**.
 
 ![Orbit Cam](workshop/preview.png)
@@ -21,7 +23,7 @@ Orbit Cam continues [Perspective Camera](https://steamcommunity.com/sharedfiles/
 - Floating labels no longer appear in the sky when what they point at is behind the camera.
 - The outline of what you hover works right after switching cameras.
 - Gentler panning with the middle mouse button.
-- A middle mouse drag that starts over a window doesn't turn the camera, for windows that use that button themselves, such as [PiP Cam](https://github.com/xupisco/parkitect_mods-pip_cam)'s views.
+- A middle mouse drag that starts over a window doesn't turn the camera, for windows that use that button themselves, such as [PiP Cam](https://steamcommunity.com/sharedfiles/filedetails/?id=3835355172)'s views.
 
 ## Building
 
