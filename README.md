@@ -2,7 +2,7 @@
 
 A free orbiting camera for [Parkitect](https://www.themeparkitect.com/): tilt it down to the ground or up to the sky, orbit around anything, and zoom from the treetops down to a guest's shoulder.
 
-Orbit Cam continues [Perspective Camera](https://steamcommunity.com/sharedfiles/filedetails/?id=1291489658) by H-POPS ([source](https://github.com/H-POPS/Parkitect_PerspectiveCamera)), with fixes and new features on top. It uses its own identifier (`xupisco@PerspectiveCamera`), so **disable Perspective Camera when using Orbit Cam**.
+Orbit Cam continues [Perspective Camera](https://steamcommunity.com/sharedfiles/filedetails/?id=1291489658) by H-POPS ([source](https://github.com/H-POPS/Parkitect_PerspectiveCamera)), with fixes and new features on top. It uses its own identifier (`xupisco@OrbitCam`), so **disable Perspective Camera when using Orbit Cam**.
 
 ![Orbit Cam](workshop/preview.png)
 
@@ -31,7 +31,7 @@ You need the .NET SDK and Parkitect installed.
 dotnet build PerspectiveCamera/BetterPerspective.csproj -c Release
 ```
 
-The build copies the mod, Harmony, the license and the preview into `Documents/Parkitect/Mods/xupisco@PerspectiveCamera`. If the game or your Parkitect user folder is somewhere else:
+The build copies the mod, Harmony, the license and the preview into `Documents/Parkitect/Mods/orbit_cam`. If the game or your Parkitect user folder is somewhere else:
 
 ```bash
 dotnet build PerspectiveCamera/BetterPerspective.csproj -c Release -p:ParkitectPath="<Parkitect>" -p:ParkitectUserPath="<Documents>/Parkitect"

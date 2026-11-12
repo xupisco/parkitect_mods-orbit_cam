@@ -122,7 +122,7 @@ namespace PerspectiveCamera
 
                 if (AllowTilt)
                 {
-                    var t = InputManager.getAxisRaw("xupisco@PerspectiveCamera/CameraTiltDown", "xupisco@PerspectiveCamera/CameraTiltUp");
+                    var t = InputManager.getAxisRaw("xupisco@OrbitCam/CameraTiltDown", "xupisco@OrbitCam/CameraTiltUp");
                     _camera.Tilt += t * TiltSpeed * num;
                 }
             }

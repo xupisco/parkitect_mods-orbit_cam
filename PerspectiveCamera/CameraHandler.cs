@@ -78,7 +78,7 @@ namespace PerspectiveCamera
 
         private void Update()
         {
-            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@PerspectiveCamera/switchMode")))
+            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@OrbitCam/switchMode")))
             {
                 ToggleCamera();
             }

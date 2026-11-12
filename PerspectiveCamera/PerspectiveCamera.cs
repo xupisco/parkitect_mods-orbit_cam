@@ -193,7 +193,7 @@ namespace PerspectiveCamera
 
             var park = GameController.Instance.park;
             MaxBounds = new Vector3(park.xSize - .6f, park.ySize, park.zSize - .6f);
-            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@PerspectiveCamera/setting")))
+            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@OrbitCam/setting")))
             {
                 ShowSettings = !ShowSettings;
             }

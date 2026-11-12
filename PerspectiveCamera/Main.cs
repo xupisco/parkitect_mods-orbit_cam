@@ -6,11 +6,11 @@ namespace PerspectiveCamera
 {
     public class Main : AbstractMod, IModSettings
     {
-        // The identifier stays the fork's, so keys and settings carry over.
+        // Its own identifier, so it never clashes with the original Perspective Camera.
         public override string getName() => "Orbit Cam";
         public override string getDescription() => "A free orbiting perspective camera. Continues H-POPS' Perspective Camera; disable that one when using this.";
         public override string getVersionNumber() => "1.1.0";
-        public override string getIdentifier() => "xupisco@PerspectiveCamera";
+        public override string getIdentifier() => "xupisco@OrbitCam";
         public override bool isMultiplayerModeCompatible() => true;
         public override bool isRequiredByAllPlayersInMultiplayerMode() => false;
 

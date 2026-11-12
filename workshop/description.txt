@@ -27,7 +27,7 @@ Smoothness, move, rotate and zoom speed, and a render distance or a target frame
 
 [h2]Good to know[/h2]
 [list]
-[*]Works with [b]Camera POV[/b] and [b]PiP Cam[/b].
+[*]Works with [b]POV Cam[/b] and [b]PiP Cam[/b].
 [*]The camera is only yours, so other players in a multiplayer game don't need the mod.
 [*]Your saves don't depend on this mod, so you can remove it at any time.
 [/list]

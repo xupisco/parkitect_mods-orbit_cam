@@ -8,14 +8,14 @@
 
   <PropertyGroup>
     <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
-    <Identifier>xupisco@PerspectiveCamera</Identifier>
+    <Identifier>xupisco@OrbitCam</Identifier>
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
     <Name>Orbit Cam</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
     <Description>A free orbiting perspective camera</Description>
 
     <!-- dll name -->
-    <AssemblyName>$(Identifier)</AssemblyName>
+    <AssemblyName>orbit_cam</AssemblyName>
     <!-- Output folder name in $(ModDir) -->
     <FolderName>$(AssemblyName)</FolderName>
 

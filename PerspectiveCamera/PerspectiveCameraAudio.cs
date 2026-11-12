@@ -29,7 +29,7 @@ namespace PerspectiveCamera
 
         private static bool Prefix(MInstance target, Vector3 position, ref MInstance.FunctionResult __result)
         {
-            // Only for this camera: the game's own camera (F10) keeps the game's placement, and Camera POV turns this
+            // Only for this camera: the game's own camera (F10) keeps the game's placement, and POV Cam turns this
             // camera off and places sounds itself.
             PerspectiveCamera camera = PerspectiveCamera.Current;
             if (camera == null || !camera.isActiveAndEnabled || camera.Camera == null)
