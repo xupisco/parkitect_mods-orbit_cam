@@ -15,6 +15,8 @@ namespace PerspectiveCamera
         public bool AllowPan;
         public bool PanBreaksFollow;
         public float PanSpeedVar;
+        private const float MapViewPanFactor = 0.4f;
+        private const float PanFactor = 0.5f;
         public float PanSpeed;
 
         public bool AllowRotate;
@@ -70,8 +72,33 @@ namespace PerspectiveCamera
             _camera = gameObject.GetComponent<PerspectiveCamera>();
         }
 
+        // A drag with the orbit button that starts over a window belongs to the window, such as a PiP Cam view, so the
+        // camera neither orbits nor holds the cursor for it. Worked out once a frame, for both of its readers.
+        private static int _orbitCheckedFrame = -1;
+        private static bool _orbitStartedOverWindow;
+
+        internal static bool OrbitStartedOverWindow
+        {
+            get
+            {
+                if (_orbitCheckedFrame != Time.frameCount)
+                {
+                    _orbitCheckedFrame = Time.frameCount;
+                    if (Input.GetKeyDown(KeyCode.Mouse2))
+                        _orbitStartedOverWindow = UIUtility.isMouseOverUIElement();
+                    else if (!Input.GetKey(KeyCode.Mouse2))
+                        _orbitStartedOverWindow = false;
+                }
+                return _orbitStartedOverWindow;
+            }
+        }
+
         protected void Update()
         {
+            // Without a camera there is nothing to control, and the first lines below would throw on every frame.
+            if (_camera == null)
+                return;
+
             try
             {
                 float num = 0.02f;
@@ -85,22 +112,37 @@ namespace PerspectiveCamera
                 TiltSpeed = TiltSpeedVar;
                 PanSpeed = PanSpeedVar;
 
-
-                if (_camera == null)
-                    return;
-
-                if (AllowZoom && !UIUtility.isMouseOverUIElement())
+                if (!UIUtility.isMouseOverUIElement())
                 {
-                    var scroll = -Input.GetAxisRaw(ZoomInputAxis);
-                    _camera.Distance -= scroll * zoomSpeed * num * distanceMultiplier;
+                    if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    {
+                        // Shift with the wheel changes how fast the keys move the camera instead of zooming. It is the
+                        // same value as the Move Speed slider, kept within the slider's range.
+                        float notches = Input.mouseScrollDelta.y;
+                        if (notches != 0f)
+                        {
+                            PerspectiveCameraSettings settings = PerspectiveCameraSettings.Instance;
+                            settings.MoveSpeed = Mathf.Clamp(settings.MoveSpeed * Mathf.Pow(1.15f, notches), 1f, 40f);
+                            PlayerPrefs.SetFloat("MoveSpeed", settings.MoveSpeed);
+                        }
+                    }
+                    else if (AllowZoom)
+                    {
+                        var scroll = -Input.GetAxisRaw(ZoomInputAxis);
+                        _camera.Distance -= scroll * zoomSpeed * num * distanceMultiplier;
+                    }
                 }
 
-                if (Input.GetKey(MouseOrbitButton))
+                if (Input.GetKey(MouseOrbitButton) && !OrbitStartedOverWindow)
                 {
-                    if (AllowPan && (Input.GetKey(PanKey1) || Input.GetKey(PanKey2)))
+                    // In the map view there is no orbit, so the button drags the map without Shift.
+                    if (AllowPan && (_camera.IsMapView || Input.GetKey(PanKey1) || Input.GetKey(PanKey2)))
                     {
-                        var panX = -1 * Input.GetAxisRaw("Mouse X") * PanSpeed * num;
-                        var panZ = -1 * Input.GetAxisRaw("Mouse Y") * PanSpeed * num;
+                        // Slower than the original mod's pan, and slower still looking straight down, where the same
+                        // mouse movement covers more of the screen.
+                        var zoomModifier = _camera.ZoomSpeedModifier * (_camera.IsMapView ? MapViewPanFactor : PanFactor);
+                        var panX = -1 * Input.GetAxisRaw("Mouse X") * PanSpeed * num * zoomModifier;
+                        var panZ = -1 * Input.GetAxisRaw("Mouse Y") * PanSpeed * num * zoomModifier;
 
                         _camera.AddToPosition(panX, 0, panZ);
 

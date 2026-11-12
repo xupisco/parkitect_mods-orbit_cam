@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <LangVersion>latest</LangVersion>
     <RootNamespace>PerspectiveCamera</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup>
     <!-- Used as identifier in parkitect (-> IMod.Identifier) -->
-    <Identifier>H-POPS@PerspectiveCamera</Identifier>
+    <Identifier>xupisco@PerspectiveCamera</Identifier>
     <!-- Used as name in parkitect(-> IMod.Name) and as AssemblyTitle and AssemblyProduct-->
-    <Name>Perspective Camera</Name>
+    <Name>Orbit Cam</Name>
     <!-- Used as description in parkitect (-> IMod.Description) and as AssemblyDescription -->
-    <Description>Perspective camera for your game</Description>
+    <Description>A free orbiting perspective camera</Description>
 
     <!-- dll name -->
     <AssemblyName>$(Identifier)</AssemblyName>
@@ -25,7 +25,7 @@
     <Company>H-POPS</Company>
 
     <!-- If true: execute Parkitect.exe after build. For single build: dotnet build /p:StartParkitect=true -->
-    <StartParkitect>true</StartParkitect>
+    <StartParkitect>false</StartParkitect>
     <!-- Starts Parkitect via steam. $(SteamExe) must be specified! -->
     <!-- Another advantage of starting via steam: otherwise msbuild waits for Parkitect to close -->
     <UseSteam>true</UseSteam>
@@ -33,14 +33,21 @@
 
   <PropertyGroup>
     <!-- Different on each system -->
-    <ParkitectPath>D:\Games\steamapps\common\Parkitect</ParkitectPath>
-    <ParkitectUserPath>C:\Users\Henrico\Documents\Parkitect</ParkitectUserPath>
+    <ParkitectPath Condition="'$(ParkitectPath)' == ''">D:\games\steam\steamapps\common\Parkitect</ParkitectPath>
+    <ParkitectUserPath Condition="'$(ParkitectUserPath)' == ''">$([System.Environment]::GetFolderPath(SpecialFolder.MyDocuments))\Parkitect</ParkitectUserPath>
     <SteamExe>C:\Games\Steam\Steam.exe</SteamExe>
   </PropertyGroup>
 
   <PropertyGroup>
     <ParkitectSteamId>453090</ParkitectSteamId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" />
+    <!-- The game's assemblies target netstandard 2.0. -->
+    <Reference Include="netstandard" />
+  </ItemGroup>
 
   <ItemGroup>
     <!--
@@ -62,6 +69,9 @@
     <Reference Include="UnityEngine.UI">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
@@ -74,7 +84,7 @@
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.InputLegacyModule">
+    <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>$(ParkitectPath)/Parkitect_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -97,7 +107,14 @@
     <Delete Files="$(ModDir)/$(TargetFileName)" />
     <MakeDir Directories="$(ModDir)" />
     <Copy SourceFiles="$(TargetPath)" DestinationFiles="$(ModDir)/$(TargetFileName)" />
-    <Exec Condition="$(ConfigurationName) == 'Release'" Command="7z a -r &quot;$(ModDir).zip&quot; &quot;$(ModDir)&quot;" />
+    <!-- Harmony goes along, for the sound patch. -->
+    <ItemGroup>
+      <_harmony_dll Include="@(ReferenceCopyLocalPaths)" Condition="'%(Filename)%(Extension)' == '0Harmony.dll'" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_harmony_dll)" DestinationFolder="$(ModDir)" SkipUnchangedFiles="true" />
+    <!-- The MIT license asks for its notice in every copy, and the game shows the preview on the Workshop page. -->
+    <Copy SourceFiles="..\LICENSE;..\workshop\0Harmony.LICENSE.txt" DestinationFolder="$(ModDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="..\workshop\preview.png" DestinationFolder="$(ModDir)" SkipUnchangedFiles="true" Condition="Exists('..\workshop\preview.png')" />
   </Target>
   <Target Name="StartParkitect" AfterTargets="PostBuild" Condition="'$(StartParkitect)' == 'true'">
     <Exec Condition="'$(UseSteam)' != 'true'" Command="&quot;$(ParkitectPath)/Parkitect&quot;" />

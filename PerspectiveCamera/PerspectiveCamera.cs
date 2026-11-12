@@ -103,8 +103,18 @@ namespace PerspectiveCamera
             FollowRotationOffset = 0;
         }
 
+        // The camera in the park, for the sound placement.
+        public static PerspectiveCamera Current { get; private set; }
+
+        protected void OnDestroy()
+        {
+            if (Current == this)
+                Current = null;
+        }
+
         protected void Start()
         {
+            Current = this;
             ObjectEventManager.remove(this);
             ObjectEventManager.add(this);
             _tiltShift = Camera.main.GetComponent<TiltShift>();
@@ -183,21 +193,17 @@ namespace PerspectiveCamera
 
             var park = GameController.Instance.park;
             MaxBounds = new Vector3(park.xSize - .6f, park.ySize, park.zSize - .6f);
-            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("H-POPS@PerspectiveCamera/setting")))
+            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@PerspectiveCamera/setting")))
             {
                 ShowSettings = !ShowSettings;
             }
 
-            if (Input.GetMouseButton(2))
+            if (!UIUtility.isInputFieldFocused() && InputManager.getKeyDown("CameraMapView"))
             {
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                ToggleMapView();
             }
-            else
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
+
+            CursorAnchor.Update(Input.GetMouseButton(2) && !PerspectiveCameraMouse.OrbitStartedOverWindow);
 
             var smoothness = PerspectiveCameraSettings.Instance.Smoothness;
             MoveDampening = smoothness;
@@ -262,7 +268,8 @@ namespace PerspectiveCamera
             LookAt.y += LookAtHeightOffset;
 
 
-            Tilt = Mathf.Clamp(Tilt, MinTilt, MaxTilt);
+            // The map view holds the view straight down until it is left with its key or Esc.
+            Tilt = _mapView ? MapViewTilt : Mathf.Clamp(Tilt, MinTilt, MaxTilt);
             Distance = Mathf.Clamp(Distance, MinDistance, MaxDistance);
             LookAt = new Vector3(Mathf.Clamp(LookAt.x, MinBounds.x, MaxBounds.x),
                 Mathf.Clamp(LookAt.y, MinBounds.y, MaxBounds.y), Mathf.Clamp(LookAt.z, MinBounds.z, MaxBounds.z));
@@ -363,6 +370,53 @@ namespace PerspectiveCamera
             JumpTo(toGameObject.transform.position, snap);
         }
 
+        // The game's map view key (M by default) turns the view to look straight down, lined up with the park's grid,
+        // and back to the angle it had, as the game's own camera does. The game's controller handles that key itself,
+        // but this camera replaces it. While it is on, the view can't be tilted or orbited, and it turns in quarters.
+        private const float MapViewTilt = 90f;
+        private const float MapViewTurn = 90f;
+        private bool _mapView;
+        private float _tiltBeforeMapView;
+        private float _rotationBeforeMapView;
+
+        public bool IsMapView => _mapView;
+
+        private void ToggleMapView()
+        {
+            _mapView = !_mapView;
+            if (_mapView)
+            {
+                _tiltBeforeMapView = Tilt;
+                _rotationBeforeMapView = Rotation;
+                Tilt = MapViewTilt;
+                Rotation = Mathf.Round(Rotation / MapViewTurn) * MapViewTurn;
+                // Esc leaves the map view, after any window opened on top of it has been closed.
+                EscapeHierarchy.Instance.push(LeaveMapView);
+            }
+            else
+            {
+                Tilt = _tiltBeforeMapView;
+                Rotation = _rotationBeforeMapView;
+                EscapeHierarchy.Instance.remove(LeaveMapView);
+            }
+            ScriptableSingleton<SoundAssetManager>.Instance.mapTurn.play2D();
+        }
+
+        private void LeaveMapView()
+        {
+            if (_mapView)
+            {
+                ToggleMapView();
+            }
+        }
+
+        // A quarter turn of the map view, the same way round as the keys turn the camera.
+        public void TurnMapView(int quarters)
+        {
+            Rotation = Mathf.Round(Rotation / MapViewTurn) * MapViewTurn + quarters * MapViewTurn;
+            ScriptableSingleton<SoundAssetManager>.Instance.mapTurn.play2D();
+        }
+
         public new float GetZoomPercentage()
         {
             return Mathf.InverseLerp(this.MinDistance, this.MaxDistance, this.Distance);
@@ -428,6 +482,10 @@ namespace PerspectiveCamera
             Follow((Transform) null, false);
         }
 
+
+        // How much faster the camera moves over the ground as it zooms out. Proportional to the distance, so the ground
+        // appears to move at about the same speed at any zoom. At the maximum distance it is about 2.
+        public float ZoomSpeedModifier => Distance / 20f;
 
         public void AddToPosition(float dx, float dy, float dz)
         {

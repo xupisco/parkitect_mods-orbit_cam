@@ -26,6 +26,11 @@ namespace PerspectiveCamera
             OrigCamera.SetActive(false);
             PerspectiveCamera.SetActive(false);
             cameraGo.SetActive(true);
+            if (GameController.Instance != null)
+            {
+                RefreshOutlines();
+            }
+
             Settings.Instance.changeGraphicsColorCorrectionFilter(Settings.Instance
                 .graphicsColorCorrectionFilterIdentifier);
             Settings.Instance.changeAntiAliasing(Settings.Instance.antiAliasing);
@@ -49,6 +54,16 @@ namespace PerspectiveCamera
             }
         }
 
+        // The outline keeps drawing on the camera it read when it was enabled, so it has to read the new one.
+        private static void RefreshOutlines()
+        {
+            foreach (JumpFloodOutlineRenderer outline in FindObjectsOfType<JumpFloodOutlineRenderer>())
+            {
+                outline.gameObject.SetActive(false);
+                outline.gameObject.SetActive(true);
+            }
+        }
+
         private void ToggleCamera()
         {
             if (!PerspectiveCamera.activeSelf)
@@ -63,7 +78,7 @@ namespace PerspectiveCamera
 
         private void Update()
         {
-            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("H-POPS@PerspectiveCamera/switchMode")))
+            if (Input.GetKeyUp(Settings.Instance.getKeyMapping("xupisco@PerspectiveCamera/switchMode")))
             {
                 ToggleCamera();
             }

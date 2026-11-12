@@ -6,10 +6,11 @@ namespace PerspectiveCamera
 {
     public class Main : AbstractMod, IModSettings
     {
-        public override string getName() => "Perspective Camera";
-        public override string getDescription() => "Perspective camera for your game";
-        public override string getVersionNumber() => "1.0.2";
-        public override string getIdentifier() => "H-POPS@PerspectiveCamera";
+        // The identifier stays the fork's, so keys and settings carry over.
+        public override string getName() => "Orbit Cam";
+        public override string getDescription() => "A free orbiting perspective camera. Continues H-POPS' Perspective Camera; disable that one when using this.";
+        public override string getVersionNumber() => "1.1.0";
+        public override string getIdentifier() => "xupisco@PerspectiveCamera";
         public override bool isMultiplayerModeCompatible() => true;
         public override bool isRequiredByAllPlayersInMultiplayerMode() => false;
 
@@ -20,17 +21,22 @@ namespace PerspectiveCamera
             SetupKeyBinding();
         }
 
+        private HarmonyLib.Harmony _harmony;
+
         public override void onEnabled()
         {
             PerspectiveCameraSettings.Instance.Load();
             EventManager.Instance.OnStartPlayingPark += InstanceOnOnStartPlayingPark;
+            _harmony = new HarmonyLib.Harmony(getIdentifier());
+            _harmony.PatchAll(typeof(Main).Assembly);
         }
 
         private void InstanceOnOnStartPlayingPark()
         {
             GameObject cameraHandlerGo = new GameObject(getIdentifier() + " | Camera Handler");
             _cameraHandler = cameraHandlerGo.AddComponent<CameraHandler>();
-            
+            cameraHandlerGo.AddComponent<BehindCameraLabels>();
+
 
             _cameraHandler.OrigCamera = Camera.main.gameObject;
             _cameraHandler.PerspectiveCamera = Object.Instantiate(_cameraHandler.OrigCamera);
@@ -59,6 +65,8 @@ namespace PerspectiveCamera
 
         public void onDisabled()
         {
+            _harmony?.UnpatchAll(getIdentifier());
+            _harmony = null;
             _cameraHandler.SetCameraActive(_cameraHandler.OrigCamera);
             Object.DestroyImmediate(_cameraHandler.PerspectiveCamera);
             Object.DestroyImmediate(_cameraHandler.gameObject);
@@ -73,12 +81,12 @@ namespace PerspectiveCamera
 
             //Options
             RegisterKey("switchMode", KeyCode.F10, "Switch camera",
-                "Use this key to quickly switch between the default game camera & the perspective camera");
+                "Use this key to quickly switch between the default game camera & Orbit Cam");
 
             //Options
             RegisterKey("CameraTiltUp", KeyCode.R, "Tilt Camera Up");
             //Options
-            RegisterKey("CameraTiltDown", KeyCode.F, "Tilt Camera Up");
+            RegisterKey("CameraTiltDown", KeyCode.F, "Tilt Camera Down");
         }
 
         private void RegisterKey(string identifier, KeyCode keyCode, string name, string description = "")

@@ -51,11 +51,14 @@ namespace PerspectiveCamera
 
         protected void Update()
         {
+            // Without a camera there is nothing to control, and the first lines below would throw on every frame.
+            if (_camera == null)
+                return;
+
             try
             {
                 var num = 0.02f;
                 var distanceMultiplier = _camera.Distance * 7 / _camera.MaxDistance + 0.1f;
-                var distanceModifier = Mathf.Sqrt(_camera.Distance / _camera.MaxDistance) * 2;
 
                 var moveSpeed = PerspectiveCameraSettings.Instance.MoveSpeed;
                 FastMoveSpeed = moveSpeed * 2;
@@ -70,6 +73,7 @@ namespace PerspectiveCamera
                 {
                     var hasMovement = false;
 
+                    var zoomModifier = _camera.ZoomSpeedModifier;
                     var speed = moveSpeed;
                     if (AllowFastMove && (Input.GetKey(FastMoveKeyCode1) || Input.GetKey(FastMoveKeyCode2)))
                     {
@@ -80,14 +84,14 @@ namespace PerspectiveCamera
                     if (Mathf.Abs(h) > 0.001f)
                     {
                         hasMovement = true;
-                        _camera.AddToPosition(h * speed * num * distanceModifier, 0, 0);
+                        _camera.AddToPosition(h * speed * num * zoomModifier, 0, 0);
                     }
 
                     var v = InputManager.getAxisRaw("CameraMoveDown", "CameraMoveUp");
                     if (Mathf.Abs(v) > 0.001f)
                     {
                         hasMovement = true;
-                        _camera.AddToPosition(0, 0, v * speed * num * distanceModifier);
+                        _camera.AddToPosition(0, 0, v * speed * num * zoomModifier);
                     }
 
                     if (hasMovement && _camera.IsFollowing && MovementBreaksFollow)
@@ -95,7 +99,15 @@ namespace PerspectiveCamera
                 }
 
 
-                if (AllowRotate)
+                if (AllowRotate && _camera.IsMapView)
+                {
+                    // In the map view each press turns a quarter.
+                    if (InputManager.getKeyDown("CameraRotateLeft"))
+                        _camera.TurnMapView(1);
+                    if (InputManager.getKeyDown("CameraRotateRight"))
+                        _camera.TurnMapView(-1);
+                }
+                else if (AllowRotate)
                 {
                     var r = InputManager.getAxisRaw("CameraRotateRight", "CameraRotateLeft");
                     _camera.Rotation += r * rotateSpeed * num;
@@ -110,7 +122,7 @@ namespace PerspectiveCamera
 
                 if (AllowTilt)
                 {
-                    var t = InputManager.getAxisRaw("H-POPS@PerspectiveCamera/CameraTiltDown", "H-POPS@PerspectiveCamera/CameraTiltUp");
+                    var t = InputManager.getAxisRaw("xupisco@PerspectiveCamera/CameraTiltDown", "xupisco@PerspectiveCamera/CameraTiltUp");
                     _camera.Tilt += t * TiltSpeed * num;
                 }
             }

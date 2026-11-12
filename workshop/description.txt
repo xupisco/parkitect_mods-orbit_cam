@@ -1,0 +1,35 @@
+[h1]Orbit Cam[/h1]
+A free orbiting camera for your park: tilt it down to the ground or up to the sky, orbit around anything, and zoom from the treetops down to a guest's shoulder.
+
+Orbit Cam continues [url=https://steamcommunity.com/sharedfiles/filedetails/?id=1291489658]Perspective Camera[/url] by H-POPS, which hasn't been updated in years, with fixes and new features on top. [b]Disable Perspective Camera when using Orbit Cam[/b]; the two can't run together.
+
+[h2]Controls[/h2]
+[list]
+[*]The camera keys ([b]WASD[/b]) move, [b]Q[/b] and [b]E[/b] rotate, [b]R[/b] and [b]F[/b] tilt, and the mouse wheel zooms.
+[*]Hold the [b]middle mouse button[/b] to orbit. Hold [b]Shift[/b] with it to pan.
+[*][b]Shift + mouse wheel[/b] changes how fast the camera keys move it.
+[*][b]F10[/b] switches between Orbit Cam and the game's own camera.
+[/list]
+
+[h2]What's new since Perspective Camera[/h2]
+[list]
+[*][b]The cursor stays put while orbiting[/b], so whatever you are building doesn't jump to the middle of the screen.
+[*][b]Map view[/b]: the game's map view key ([b]M[/b]) turns the view straight down, lined up with the park's grid. Q and E turn it a quarter at a time, the middle mouse button drags the map, and M or Esc take you back to the angle you had.
+[*][b]Sound by distance[/b]: rides and speakers are heard by how far they are from you, not by whether they are on screen, so a ride on the horizon no longer plays loud just because you look at it.
+[*]Floating labels, such as a shop's warning, no longer appear in the sky when what they point at is behind the camera.
+[*]The outline of what you hover works right after switching cameras.
+[*]Gentler panning with the middle mouse button.
+[*]Dragging with the middle mouse button over a window no longer turns the camera, for windows that use that button themselves, such as PiP Cam's views.
+[/list]
+
+[h2]Settings[/h2]
+Smoothness, move, rotate and zoom speed, and a render distance or a target framerate are in the mod's settings. The keys can be changed in the game's controls settings, under Orbit Cam.
+
+[h2]Good to know[/h2]
+[list]
+[*]Works with [b]Camera POV[/b] and [b]PiP Cam[/b].
+[*]The camera is only yours, so other players in a multiplayer game don't need the mod.
+[*]Your saves don't depend on this mod, so you can remove it at any time.
+[/list]
+
+Based on Perspective Camera by H-POPS (MIT license). Harmony is included with the mod, so there is nothing else to install.
